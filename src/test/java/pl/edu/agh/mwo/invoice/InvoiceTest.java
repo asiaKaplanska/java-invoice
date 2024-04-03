@@ -1,13 +1,13 @@
 package pl.edu.agh.mwo.invoice;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import pl.edu.agh.mwo.invoice.Invoice;
 import pl.edu.agh.mwo.invoice.product.DairyProduct;
 import pl.edu.agh.mwo.invoice.product.OtherProduct;
 import pl.edu.agh.mwo.invoice.product.Product;
@@ -125,4 +125,42 @@ public class InvoiceTest {
     public void testAddingNullProduct() {
         invoice.addProduct(null);
     }
+
+    @Test
+    public void testInvoiceHasNumber() {
+        Invoice invoice = new Invoice();
+        int number = invoice.getInvoiceNumber();
+    }
+
+    @Test
+    public void testInvoiceNumberIsGreaterThan0() {
+        Assert.assertTrue(new Invoice().getInvoiceNumber() > 0);
+    }
+
+    @Test
+    public void testTwoInvoicesHaveDifferentNumbers() {
+        int number1 = new Invoice().getInvoiceNumber();
+        int number2 = new Invoice().getInvoiceNumber();
+        Assert.assertNotEquals(number1, number2);
+    }
+
+    @Test
+    public void testInvoiceDoesNotChangeItsNumber() {
+        Assert.assertEquals(invoice.getInvoiceNumber(), invoice.getInvoiceNumber());
+    }
+
+    @Test
+    public void testTheFirstInvoiceNumberIsLowerThanTheSecond() {
+        int number1 = new Invoice().getInvoiceNumber();
+        int number2 = new Invoice().getInvoiceNumber();
+        Assert.assertThat(number1, Matchers.lessThan(number2));
+    }
+
+    @Test
+    public void testInvoiceHasProducts() {
+        Invoice invoice = new Invoice();
+        Product products = invoice.getProduct();
+    }
+
+    //dokończyć punkt 1, 2 i 3
 }
