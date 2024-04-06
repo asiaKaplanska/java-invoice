@@ -33,7 +33,8 @@ public class Invoice {
         BigDecimal totalNet = BigDecimal.ZERO;
         for (Product product : products.keySet()) {
             BigDecimal quantity = new BigDecimal(products.get(product));
-            totalNet = totalNet.add(product.getPrice().multiply(quantity));
+            totalNet = totalNet.add(product.getPrice()
+                    .multiply(quantity));
         }
         return totalNet;
     }
@@ -46,7 +47,8 @@ public class Invoice {
         BigDecimal totalGross = BigDecimal.ZERO;
         for (Product product : products.keySet()) {
             BigDecimal quantity = new BigDecimal(products.get(product));
-            totalGross = totalGross.add(product.getPriceWithTax().multiply(quantity));
+            totalGross = totalGross.add(product.getPriceWithTax()
+                    .multiply(quantity));
         }
         return totalGross;
     }
@@ -63,7 +65,9 @@ public class Invoice {
         }
 
         printer.printHeader(invoiceNumber, stringBuilder);
-        products.forEach((product, quantity) -> printer.printProduct(product, quantity, stringBuilder));
+        products.forEach((product, quantity) -> printer.printProduct(product,
+                quantity,
+                stringBuilder));
         printer.printFooter(stringBuilder, products);
 
         return stringBuilder.toString();

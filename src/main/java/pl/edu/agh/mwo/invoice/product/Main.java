@@ -7,8 +7,9 @@ import java.math.BigDecimal;
 
 public class Main {
     public static void main(String[] args) {
+        var potPrice = 10;
         Invoice invoice = new Invoice(new DefaultPrinter());
-        invoice.addProduct(new OtherProduct("Doniczka", new BigDecimal(10)), 2);
+        invoice.addProduct(new OtherProduct("Doniczka", new BigDecimal(potPrice)), 2);
         System.out.println(invoice.printInvoice());
     }
 }
