@@ -181,7 +181,7 @@ public class InvoiceTest {
         invoice.addProduct(rack, 1);
         invoice.printInvoice();
 
-        Mockito.verify(printerService, Mockito.times(1)).printHeader(eq(1), Mockito.any());
+        Mockito.verify(printerService, Mockito.times(1)).printHeader(eq(invoice.getInvoiceNumber()), Mockito.any());
         Mockito.verify(printerService, Mockito.times(1)).printProduct(eq(plant), eq(55), any());
         Mockito.verify(printerService, Mockito.times(1)).printProduct(eq(rack), eq(1), any());
         Mockito.verify(printerService, Mockito.times(1)).printFooter(any(), any());
