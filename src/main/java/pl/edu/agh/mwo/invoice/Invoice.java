@@ -4,15 +4,18 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import pl.edu.agh.mwo.invoice.product.CustomException;
 import pl.edu.agh.mwo.invoice.product.Product;
 
 public class Invoice {
     private Map<Product, Integer> products = new HashMap<Product, Integer>();
     private static int lastInvoiceNumber;
     private final int invoiceNumber;
+    private PrinterService printer;
 
-    public Invoice() {
+    public Invoice(PrinterService printer) {
         this.invoiceNumber = ++lastInvoiceNumber;
+        this.printer = printer;
     }
 
     public void addProduct(Product product) {
@@ -52,8 +55,21 @@ public class Invoice {
         return invoiceNumber;
     }
 
+    public String printInvoice() {
+        StringBuilder stringBuilder = new StringBuilder();
 
-    public Product getProduct() {
-        return null;
+        if (products.isEmpty()) {
+            throw new CustomException("Empty invoice!");
+        }
+
+        printer.printHeader(invoiceNumber, stringBuilder);
+        products.forEach((product, quantity) -> printer.printProduct(product, quantity, stringBuilder));
+        printer.printFooter(stringBuilder, products);
+
+        return stringBuilder.toString();
+    }
+
+    public int getProductQuantity(Product product) {
+        return products.get(product);
     }
 }

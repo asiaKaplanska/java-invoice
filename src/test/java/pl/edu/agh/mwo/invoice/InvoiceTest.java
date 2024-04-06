@@ -1,24 +1,34 @@
 package pl.edu.agh.mwo.invoice;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import pl.edu.agh.mwo.invoice.product.DairyProduct;
-import pl.edu.agh.mwo.invoice.product.OtherProduct;
-import pl.edu.agh.mwo.invoice.product.Product;
-import pl.edu.agh.mwo.invoice.product.TaxFreeProduct;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import pl.edu.agh.mwo.invoice.product.*;
+
+import static org.mockito.ArgumentMatchers.*;
+
+@ExtendWith(MockitoExtension.class)
 public class InvoiceTest {
     private Invoice invoice;
 
+    @Mock
+    private PrinterService printerService;
+
     @Before
     public void createEmptyInvoiceForTheTest() {
-        invoice = new Invoice();
+        MockitoAnnotations.openMocks(this);
+        invoice = new Invoice(printerService);
     }
 
     @Test
@@ -128,19 +138,19 @@ public class InvoiceTest {
 
     @Test
     public void testInvoiceHasNumber() {
-        Invoice invoice = new Invoice();
+        Invoice invoice = new Invoice(printerService);
         int number = invoice.getInvoiceNumber();
     }
 
     @Test
     public void testInvoiceNumberIsGreaterThan0() {
-        Assert.assertTrue(new Invoice().getInvoiceNumber() > 0);
+        Assert.assertTrue(new Invoice(printerService).getInvoiceNumber() > 0);
     }
 
     @Test
     public void testTwoInvoicesHaveDifferentNumbers() {
-        int number1 = new Invoice().getInvoiceNumber();
-        int number2 = new Invoice().getInvoiceNumber();
+        int number1 = new Invoice(printerService).getInvoiceNumber();
+        int number2 = new Invoice(printerService).getInvoiceNumber();
         Assert.assertNotEquals(number1, number2);
     }
 
@@ -151,16 +161,29 @@ public class InvoiceTest {
 
     @Test
     public void testTheFirstInvoiceNumberIsLowerThanTheSecond() {
-        int number1 = new Invoice().getInvoiceNumber();
-        int number2 = new Invoice().getInvoiceNumber();
+        int number1 = new Invoice(printerService).getInvoiceNumber();
+        int number2 = new Invoice(printerService).getInvoiceNumber();
         Assert.assertThat(number1, Matchers.lessThan(number2));
     }
 
-    @Test
-    public void testInvoiceHasProducts() {
-        Invoice invoice = new Invoice();
-        Product products = invoice.getProduct();
+    //1 Drukowanie --------------------------------------------------------------------------
+    @Test(expected = CustomException.class)
+    public void testInvoicePrinterPrintEmptyInvoice() {
+        invoice.printInvoice();
     }
 
-    //dokończyć punkt 1, 2 i 3
+    @Test
+    public void testPrintInvoice() {
+        var plant = new TaxFreeProduct("Roślina", new BigDecimal("25"));
+        var rack = new TaxFreeProduct("Regał", new BigDecimal("399.99"));
+
+        invoice.addProduct(plant, 55);
+        invoice.addProduct(rack, 1);
+        invoice.printInvoice();
+
+        Mockito.verify(printerService, Mockito.times(1)).printHeader(eq(1), Mockito.any());
+        Mockito.verify(printerService, Mockito.times(1)).printProduct(eq(plant), eq(55), any());
+        Mockito.verify(printerService, Mockito.times(1)).printProduct(eq(rack), eq(1), any());
+        Mockito.verify(printerService, Mockito.times(1)).printFooter(any(), any());
+    }
 }
